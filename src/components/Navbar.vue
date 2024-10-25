@@ -1,6 +1,13 @@
 <script setup>
 import { RouterLink, useRoute } from "vue-router";
+import { onMounted } from "vue";
+import { initFlowbite } from "flowbite";
 import logo from "@/assets/img/logo.png";
+
+// initialize components based on data attribute selectors
+onMounted(() => {
+  initFlowbite();
+});
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -28,18 +35,14 @@ const isActiveLink = (routePath) => {
 
       <!-- CTA -->
       <div class="flex md:order-2 space-x-3 md:space-x-0">
-        <!-- <button
-          type="button"
-          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mx-3"
-        >
-          About Me
-        </button> -->
-        <button
-          type="button"
-          class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm px-3 py-2 text-center"
-        >
-          <i class="fa-brands fa-github text-xl"></i>
-        </button>
+        <a href="https://github.com/nothappenhere" target="_blank">
+          <button
+            type="button"
+            class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm px-3 py-2 text-center"
+          >
+            <i class="fa-brands fa-github text-xl"></i>
+          </button>
+        </a>
         <button
           data-collapse-toggle="navbar-cta"
           type="button"
@@ -78,13 +81,13 @@ const isActiveLink = (routePath) => {
               to="/"
               :class="[
                 isActiveLink('/')
-                  ? 'md:bg-primary-700 md:hover:bg-gray-800 bg-blue-700'
-                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black',
+                  ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
+                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
                 'py-2',
                 'px-3',
                 'md:py-1',
-                'text-white',
+                'text-gray-900',
                 'rounded',
               ]"
               aria-current="page"
@@ -96,13 +99,13 @@ const isActiveLink = (routePath) => {
               to="/temp"
               :class="[
                 isActiveLink('/temp')
-                  ? 'md:bg-primary-700 md:hover:bg-gray-800 bg-blue-700'
-                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black',
+                  ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
+                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
                 'py-2',
                 'px-3',
                 'md:py-1',
-                'text-white',
+                'text-gray-900',
                 'rounded',
               ]"
               >Temperature</RouterLink
@@ -113,13 +116,13 @@ const isActiveLink = (routePath) => {
               to="/hum"
               :class="[
                 isActiveLink('/hum')
-                  ? 'md:bg-primary-700 md:hover:bg-gray-800 bg-blue-700'
-                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black',
+                  ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
+                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
                 'py-2',
                 'px-3',
                 'md:py-1',
-                'text-white',
+                'text-gray-900',
                 'rounded',
               ]"
               >Humidity</RouterLink
@@ -130,13 +133,13 @@ const isActiveLink = (routePath) => {
               to="/w-lvl"
               :class="[
                 isActiveLink('/w-lvl')
-                  ? 'md:bg-primary-700 md:hover:bg-gray-800 bg-blue-700'
-                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black',
+                  ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
+                  : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
                 'py-2',
                 'px-3',
                 'md:py-1',
-                'text-white',
+                'text-gray-900',
                 'rounded',
               ]"
               >W-Level</RouterLink
