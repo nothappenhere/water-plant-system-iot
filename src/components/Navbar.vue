@@ -1,13 +1,6 @@
 <script setup>
 import { RouterLink, useRoute } from "vue-router";
-import { onMounted } from "vue";
-import { initFlowbite } from "flowbite";
 import logo from "@/assets/img/logo.png";
-
-// initialize components based on data attribute selectors
-onMounted(() => {
-  initFlowbite();
-});
 
 const isActiveLink = (routePath) => {
   const route = useRoute();
@@ -35,7 +28,10 @@ const isActiveLink = (routePath) => {
 
       <!-- CTA -->
       <div class="flex md:order-2 space-x-3 md:space-x-0">
-        <a href="https://github.com/nothappenhere" target="_blank">
+        <a
+          href="https://github.com/nothappenhere/water-plant-system-iot"
+          target="_blank"
+        >
           <button
             type="button"
             class="text-white bg-gray-700 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-full text-sm px-3 py-2 text-center"

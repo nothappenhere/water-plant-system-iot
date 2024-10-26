@@ -1,5 +1,6 @@
 <script setup>
 import { defineProps } from "vue";
+import { RouterLink } from "vue-router";
 // import mockup from "@/assets/img/";
 
 defineProps({
@@ -31,8 +32,8 @@ defineProps({
         >
           {{ subtitle }}
         </p>
-        <a
-          href="#"
+        <RouterLink
+          to="/temp"
           class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-500"
         >
           Get started
@@ -48,7 +49,7 @@ defineProps({
               clip-rule="evenodd"
             ></path>
           </svg>
-        </a>
+        </RouterLink>
       </div>
       <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
         <img :src="mockup" alt="hero-mockup" />
