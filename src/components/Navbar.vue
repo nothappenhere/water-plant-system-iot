@@ -80,7 +80,7 @@ const isActiveLink = (routePath) => {
                   ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
                   : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
-                'py-2',
+                'py-1',
                 'px-3',
                 'md:py-1',
                 'text-gray-900',

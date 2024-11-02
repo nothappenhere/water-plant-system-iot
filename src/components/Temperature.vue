@@ -1,27 +1,100 @@
 <script setup>
 // import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import ApexCharts from "apexcharts";
+import axios from "axios";
+
+let sensors = ref([]);
+let maxTemp = ref(null);
+let minTemp = ref(null);
+let formattedFullDate = ref("");
+let formattedPartialDate = ref("");
+
+async function fetchSensors() {
+  const response = await axios.get("http://localhost:8000/api/sensors");
+  sensors.value = response.data;
+}
+
+// GET maximum temperature
+async function getMaxTemp() {
+  const response = await axios.get(
+    "http://localhost:8000/api/sensors/max/temp"
+  );
+  if (response.data.length > 0) {
+    maxTemp.value = response.data[0];
+
+    formatTimestamp(maxTemp.value.timestamp);
+  } else {
+    maxTemp.value = null;
+  }
+}
+
+// GET minimum temperature
+async function getMinTemp() {
+  const response = await axios.get(
+    "http://localhost:8000/api/sensors/min/temp"
+  );
+  if (response.data.length > 0) {
+    minTemp.value = response.data[0];
+    formatTimestamp(minTemp.value.timestamp);
+  } else {
+    minTemp.value = null;
+  }
+}
+
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const day = String(date.getUTCDate()).padStart(2, "0"); // Mengambil hari dan menambahkan 0 di depan jika kurang dari 10
+  const fullMonth = date.toLocaleString("default", { month: "long" });
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[date.getUTCMonth()]; // Mengambil bulan dalam format singkat
+  const year = date.getUTCFullYear(); // Mengambil tahun
+  const time = date.toUTCString().split(" ")[4]; // Mengambil waktu dalam format HH:MM:SS
+
+  formattedFullDate.value = `${day} ${fullMonth} ${year}`;
+  formattedPartialDate.value = `${day} ${month} ${year}, ${time}`;
+}
+
+const minMax = ref({
+  isToggled: true,
+  toggledMinMax() {
+    this.isToggled = !this.isToggled;
+    console.log(this.isToggled);
+  },
+});
 
 const chartOptions = ref({
   // set the labels option to true to show the labels on the X and Y axis
   xaxis: {
     show: true,
     categories: [
-      "01 Feb",
-      "02 Feb",
-      "03 Feb",
-      "04 Feb",
-      "05 Feb",
-      "06 Feb",
-      "07 Feb",
+      "01 Feb, 00:44:34",
+      "02 Feb, 00:44:34",
+      "03 Feb, 00:44:34",
+      "04 Feb, 00:44:34",
+      "05 Feb, 00:44:34",
+      "06 Feb, 00:44:34",
+      "07 Feb, 00:44:34",
     ],
     labels: {
       show: true,
       style: {
         fontFamily: "Inter, sans-serif",
-        cssClass: "text-xs font-normal fill-gray-500 dark:fill-gray-400",
+        cssClass: "text-xs font-normal fill-gray-500",
       },
     },
     axisBorder: {
@@ -46,12 +119,12 @@ const chartOptions = ref({
   },
   series: [
     {
-      name: "Developer Edition",
+      name: "Maximum Temperature",
       data: [150, 141, 145, 152, 135, 125],
       color: "#1A56DB",
     },
     {
-      name: "Designer Edition",
+      name: "Minimum Temperature",
       data: [43, 13, 65, 12, 42, 73],
       color: "#7E3BF2",
     },
@@ -116,40 +189,69 @@ if (
   );
   chart.render();
 }
+
+onMounted(() => {
+  fetchSensors();
+  getMaxTemp();
+  getMinTemp();
+});
 </script>
 
 <template>
   <div
-    class="max-w-full w-full bg-white rounded-2xl shadow dark:bg-gray-800 border-gray-400 border"
+    class="max-w-[75rem] w-full bg-white rounded-2xl shadow dark:bg-gray-800 border-gray-400 border mx-auto"
   >
-    <div class="flex justify-between p-4 md:p-6 pb-0 md:pb-0">
+    <!-- Show Min/Max Temperature -->
+    <div
+      class="flex justify-between p-4 md:p-6 pb-0 md:pb-0 select-none cursor-pointer"
+      @click="minMax.toggledMinMax"
+      v-if="minMax.isToggled"
+    >
       <div>
-        <h5 class="leading-none text-3xl font-bold text-gray-900 text-center">
-          90&deg;C
+        <h5
+          class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
+        >
+          {{ maxTemp ? maxTemp.temperature_C : "Loading..." }}&deg;C
+          <span class="text-primary-700">&#8776;</span>
+          {{ maxTemp ? maxTemp.temperature_F : "Loading..." }}&deg;F
         </h5>
-        <p class="text-base font-normal text-gray-500">Max Temperature</p>
+        <p class="text-base font-normal text-gray-500 text-center">
+          Max Temperature
+        </p>
       </div>
       <div
         class="flex items-center px-2.5 py-0.5 text-base font-semibold text-primary-500 text-center"
       >
-        14-12-2004
-        <svg
-          class="w-3 h-3 ms-1"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 10 14"
-        >
-          <path
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5 13V1m0 0L1 5m4-4 4 4"
-          />
-        </svg>
+        {{ formattedFullDate || "Loading..." }}
+        <i class="fa-solid fa-arrow-up ms-2"></i>
       </div>
     </div>
+    <div
+      class="flex justify-between p-4 md:p-6 pb-0 md:pb-0 select-none cursor-pointer"
+      @click="minMax.toggledMinMax"
+      v-else
+    >
+      <div>
+        <h5
+          class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
+        >
+          {{ minTemp ? minTemp.temperature_C : "Loading..." }}&deg;C
+          <span class="text-primary-700">&#8776;</span>
+          {{ minTemp ? minTemp.temperature_F : "Loading..." }}&deg;F
+        </h5>
+        <p class="text-base font-normal text-gray-500 text-center">
+          Min Temperature
+        </p>
+      </div>
+      <div
+        class="flex items-center px-2.5 py-0.5 text-base font-semibold text-red-500 text-center"
+      >
+        {{ formattedFullDate || "Loading..." }}
+        <i class="fa-solid fa-arrow-down ms-2"></i>
+      </div>
+    </div>
+
+    <!-- Show Chart -->
     <div id="labels-chart" class="px-2.5">
       <VueApexCharts
         :type="chartOptions.chart.type"
@@ -159,6 +261,7 @@ if (
         :width="chartOptions.chart.width"
       />
     </div>
+
     <div
       class="grid grid-cols-1 items-center border-gray-400 border-t rounded-b-2xl justify-between mt-5 p-4 md:p-6 pt-0 md:pt-0"
     >
