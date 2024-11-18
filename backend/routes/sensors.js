@@ -3,6 +3,7 @@ import {
   getSensors,
   getMaxTemp,
   getMinTemp,
+  getSevenLastTempData,
   // getSevenLastData
 } from "../controllers/sensorController.js";
 const router = express.Router();
@@ -11,11 +12,11 @@ const router = express.Router();
 router.get("/", getSensors);
 
 //* GET maximum temperature
-router.get("/max/temp", getMaxTemp);
+router.get("/temp/max", getMaxTemp);
 
 //* GET minimum temperature
-router.get("/min/temp", getMinTemp);
+router.get("/temp/min", getMinTemp);
 
 //* GET minimum temperature
-// router.get("/data", getSevenLastData);
+router.get("/data", getSevenLastTempData);
 export default router;

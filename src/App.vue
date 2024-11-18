@@ -1,6 +1,6 @@
 <script setup>
 import Navbar from "@/components/Navbar.vue";
-import Footer from "./components/Footer.vue";
+import Footer from "@/components/Footer.vue";
 import { RouterView } from "vue-router";
 import { onMounted } from "vue";
 import { initFlowbite } from "flowbite";

@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint . --fix",
     "start": "node backend/server",
-    "dev-server": "node --watch backend/server"
+    "server": "node --watch backend/server"
   },
   "dependencies": {
     "apexcharts": "^3.54.1",
@@ -17,6 +17,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "flowbite": "^2.5.2",
+    "moment-timezone": "^0.5.46",
     "mysql2": "^3.11.3",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",

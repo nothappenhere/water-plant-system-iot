@@ -1,6 +1,6 @@
 <script setup>
-import Temperature from "@/components/Temperature.vue";
 import BackButton from "@/components/BackButton.vue";
+import Temperature from "@/components/Temperature.vue";
 </script>
 
 <template>
