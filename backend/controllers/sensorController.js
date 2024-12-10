@@ -17,65 +17,36 @@ export const getSensors = (req, res) => {
   });
 };
 
-//* @desc   Get maximum temperature
-//* @route  GET /api/sensors/temp/max
-export const getMaxTemp = (req, res) => {
-  db.query(
-    `SELECT *
-     FROM sensor_readings
-     WHERE temperature_C = (SELECT MAX(temperature_C) FROM sensor_readings) ORDER BY timestamp DESC`,
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: "Database query failed" });
-      }
-      res.status(200).json(result);
+export const postDB = (req, res) => {
+  const {
+    soil_moisture,
+    water_level,
+    temperature_C,
+    temperature_F,
+    humidity,
+    pump_status,
+    auto_pump_mode,
+  } = req.body;
+
+  const sql =
+    "INSERT INTO sensor_readings (soil_moisture, water_level, temperature_C, temperature_F, humidity, pump_status, auto_pump_mode, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+  const values = [
+    soil_moisture,
+    water_level,
+    temperature_C,
+    temperature_F,
+    humidity,
+    pump_status,
+    auto_pump_mode,
+  ];
+
+  db.query(sql, values, (error, results) => {
+    if (error) {
+      console.error("Gagal menyimpan data:", error);
+      res.status(500).send("Gagal menyimpan data!");
+    } else {
+      res.status(200).send("Data berhasil disimpan!");
+      res.status(200).json(results);
     }
-  );
-};
-
-//* @desc   Get minimum temperature
-//* @route  GET /api/sensors/temp/min
-export const getMinTemp = (req, res) => {
-  db.query(
-    `SELECT *
-     FROM sensor_readings
-     WHERE temperature_C = (SELECT MIN(temperature_C) FROM sensor_readings) ORDER BY timestamp DESC`,
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: "Database query failed" });
-      }
-      res.status(200).json(result);
-    }
-  );
-};
-
-//* @desc   Get seven last data sensors
-//* @route  GET /api/sensors/data or /api/sensors/data?limit=<?>
-export const getSevenLastTempData = (req, res) => {
-  const limit = parseInt(req.query.limit);
-  const validLimit = !isNaN(limit) && limit > 0 ? limit : 7;
-
-  db.query(
-    "SELECT * from sensor_readings ORDER BY timestamp DESC LIMIT ?",
-    [validLimit],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: "Database query failed" });
-      }
-
-      // Loop untuk mengonversi setiap timestamp dalam hasil query
-      const updatedResult = result.map(row => {
-        // Mengonversi timestamp UTC ke waktu lokal (Asia/Jakarta)
-        const timestampLocal = moment
-          .utc(row.timestamp)  // mengonversi dari UTC
-          .tz('Asia/Jakarta')  // mengonversi ke zona waktu lokal
-          .format('YYYY-MM-DD HH:mm:ss');  // format yang diinginkan
-
-        // Menambahkan timestamp lokal ke dalam objek hasil
-        return { ...row, timestamp: timestampLocal };
-      });
-
-      res.status(200).json(updatedResult);
-    }
-  );
+  });
 };

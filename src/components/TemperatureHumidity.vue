@@ -2,118 +2,31 @@
 // import { RouterLink } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import VueApexCharts from "vue3-apexcharts";
-import ApexCharts from "apexcharts";
-import axios from "axios";
-import moment from "moment-timezone";
 
-// let sensors = ref([]);
-// async function fetchSensors() {
-//   try {
-//     const response = await axios.get("http://localhost:8000/api/sensors/");
-//     sensors.value = response.data;
-//   } catch (error) {
-//     console.error("Error fetching API: ", error);
-//   }
-// }
-
-let maxTemp = ref(null);
-// GET maximum temperature
-async function getMaxTemp() {
-  try {
-    const response = await axios.get(
-      "http://localhost:8000/api/sensors/temp/max"
-    );
-    if (response.data.length > 0) {
-      maxTemp.value = response.data[0];
-
-      // Format timestamp untuk maxTemp
-      formatTimestamp(maxTemp.value.timestamp, "max");
-    } else {
-      maxTemp.value = null;
-    }
-  } catch (error) {
-    console.error("Error fetching API: ", error);
-  }
-}
-
-let minTemp = ref(null);
-// GET minimum temperature
-async function getMinTemp() {
-  try {
-    const response = await axios.get(
-      "http://localhost:8000/api/sensors/temp/min"
-    );
-    if (response.data.length > 0) {
-      minTemp.value = response.data[0];
-
-      // Format timestamp untuk minTemp
-      formatTimestamp(minTemp.value.timestamp, "min");
-    } else {
-      minTemp.value = null;
-    }
-  } catch (error) {
-    console.error("Error fetching API: ", error);
-  }
-}
-
-let sevenLastData = ref([]);
-let sevenTempDataC = ref([]);
-let sevenTempDataF = ref([]);
-
-async function getSevenLastData() {
-  try {
-    const response = await axios.get("http://localhost:8000/api/sensors/data");
-    if (response.data.length) {
-      sevenLastData.value = response.data;
-      sevenTempDataC.value = [];
-      sevenTempDataF.value = [];
-      formattedSevenLastData.value = [];
-
-      // sevenTempDataC.value = [];
-      // sevenTempDataF.value = [];
-
-      // Process the data
-      sevenLastData.value.forEach((data) => {
-        sevenTempDataC.value.push(data.temperature_C);
-        sevenTempDataF.value.push(data.temperature_F);
-
-        formatTimestamp(data.timestamp, "all");
-      });
-    } else {
-      sevenLastData.value = null;
-    }
-  } catch (error) {
-    console.error("Error fetching API: ", error);
-  }
-}
-
-let formattedMaxTempFullDate = ref("");
-let formattedMinTempFullDate = ref("");
-let formattedSevenLastData = ref([]);
-// Formatted date
-function formatTimestamp(timestamp, type) {
-  // Cek apakah timestamp sudah dalam UTC atau sudah di zona waktu lokal
-  const momentTimestamp = moment(timestamp).isValid()
-    ? moment(timestamp).tz("Asia/Jakarta", true)
-    : moment.utc(timestamp).tz("Asia/Jakarta");
-
-  const day = String(momentTimestamp.date()).padStart(2, "0"); // Mengambil hari
-  const fullMonth = momentTimestamp.format("MMMM"); // Mengambil bulan penuh
-  const month = momentTimestamp.format("MMM"); // Mengambil bulan singkat (contoh: Jan, Feb, Mar)
-  const year = momentTimestamp.year(); // Mengambil tahun
-  const time = momentTimestamp.format("HH:mm:ss"); // Mengambil waktu dalam format HH:mm:ss
-
-  if (type === "max") {
-    formattedMaxTempFullDate.value = `${day} ${fullMonth} ${year}`;
-  } else if (type === "min") {
-    formattedMinTempFullDate.value = `${day} ${fullMonth} ${year}`;
-    // formattedMinTempPartialDate.value = `${day} ${month} ${year}, ${time}`;
-  } else if (type === "all") {
-    // Format full date and time for each data point
-    const formattedDate = `${day} ${month} ${year}, ${time}`;
-    formattedSevenLastData.value.push(formattedDate); // Push formatted date
-  }
-}
+import {
+  TempChartOptions,
+  getMaxTemp,
+  getMinTemp,
+  getSevenLastTempData,
+  sevenTempDataC,
+  sevenTempDataF,
+  formattedSevenLastTempData,
+  maxTemp,
+  minTemp,
+  formattedMaxTempFullDate,
+  formattedMinTempFullDate,
+} from "@/composables/TempChart.js";
+import {
+  humidChartOptions,
+  getMaxHumid,
+  getMinHumid,
+  getSevenLastHumidData,
+  formattedSevenLastHumidData,
+  maxHumid,
+  minHumid,
+  formattedMaxHumidFullDate,
+  formattedMinHumidFullDate,
+} from "@/composables/humidChart.js";
 
 const minMax = ref({
   isToggled: true,
@@ -122,158 +35,51 @@ const minMax = ref({
   },
 });
 
-const chartOptions = ref({
-  // set the labels option to true to show the labels on the X and Y axis
-  xaxis: {
-    show: true,
-    categories: formattedSevenLastData.value.length
-      ? [...formattedSevenLastData.value].reverse()
-      : ["No Data"],
-    labels: {
-      show: true,
-      style: {
-        fontFamily: "Inter, sans-serif",
-        cssClass: "text-xs font-normal fill-gray-500",
-      },
-    },
-    axisBorder: {
-      show: false,
-    },
-    axisTicks: {
-      show: false,
-    },
-  },
-  yaxis: {
-    show: true,
-    tickAmount: 2,
-    min: 0,
-    max: 100,
-    labels: {
-      show: true,
-      style: {
-        fontFamily: "Inter, sans-serif",
-        cssClass: "text-xs font-normal fill-gray-500",
-      },
-      formatter: function (value) {
-        return `${value}°C`;
-      },
-    },
-  },
-  series: [
-    {
-      name: "Temperature (°F)",
-      data: sevenTempDataF.value.length
-        ? [...sevenTempDataF.value].reverse()
-        : [0],
-      color: "#7E3BF2",
-    },
-    {
-      name: "Temperature (°C)",
-      data: sevenTempDataC.value.length
-        ? [...sevenTempDataC.value].reverse()
-        : [0],
-      color: "#1A56DB",
-    },
-  ],
-  chart: {
-    sparkline: {
-      enabled: false,
-    },
-    height: "100%",
-    width: "100%",
-    type: "area",
-    fontFamily: "Inter, sans-serif",
-    dropShadow: {
-      enabled: false,
-    },
-    toolbar: {
-      show: false,
-    },
-  },
-  tooltip: {
-    enabled: true,
-    x: {
-      show: false,
-    },
-    y: {
-      formatter: function (value, { seriesIndex }) {
-        if (seriesIndex === 0) {
-          return `${value}°F`; // Data untuk Fahrenheit
-        } else if (seriesIndex === 1) {
-          return `${value}°C`; // Data untuk Celsius
-        }
-        return value; // Jika tidak sesuai
-      },
-    },
-  },
-  fill: {
-    type: "gradient",
-    gradient: {
-      opacityFrom: 0.55,
-      opacityTo: 0,
-      shade: "#1C64F2",
-      gradientToColors: ["#1C64F2"],
-    },
-  },
-  dataLabels: {
-    enabled: true,
-  },
-  stroke: {
-    width: 6,
-  },
-  legend: {
-    show: true,
-  },
-  grid: {
-    show: true,
-    strokeDashArray: 10,
-    xaxis: {
-      lines: {
-        show: true,
-      },
-    },
-  },
-});
-
-if (
-  document.getElementById("labels-chart") &&
-  typeof ApexCharts !== "undefined"
-) {
-  const chart = new ApexCharts(
-    document.getElementById("labels-chart"),
-    chartOptions
-  );
-  chart.render();
-}
-
 // watch untuk memantau perubahan data dan memperbarui chartOptions
-watch([sevenTempDataC, sevenTempDataF, formattedSevenLastData], () => {
-  chartOptions.value.xaxis.categories = [
-    ...formattedSevenLastData.value,
-  ].reverse();
-  chartOptions.value.series = [
-    {
-      name: "Temperature (°F)",
-      data: [...sevenTempDataF.value].reverse(),
-      color: "#7E3BF2",
-    },
-    {
-      name: "Temperature (°C)",
-      data: [...sevenTempDataC.value].reverse(),
-      color: "#1A56DB",
-    },
-  ];
-});
+watch(
+  [
+    TempChartOptions,
+    sevenTempDataC,
+    sevenTempDataF,
+    formattedSevenLastTempData,
+    humidChartOptions,
+    formattedSevenLastHumidData,
+  ],
+  () => {
+    TempChartOptions.value.xaxis.categories = [
+      ...formattedSevenLastTempData.value,
+    ].reverse();
+    TempChartOptions.value.series = [
+      {
+        name: "Temperature (°F)",
+        data: [...sevenTempDataF.value].reverse(),
+        color: "#7E3BF2",
+      },
+      {
+        name: "Temperature (°C)",
+        data: [...sevenTempDataC.value].reverse(),
+        color: "#1A56DB",
+      },
+    ];
+
+    humidChartOptions.value.series[0].data = formattedSevenLastHumidData.value;
+  }
+);
 
 onMounted(async () => {
   // fetchSensors();
   await getMaxTemp();
   await getMinTemp();
-  await getSevenLastData();
+  await getSevenLastTempData();
+
+  await getMaxHumid();
+  await getMinHumid();
+  await getSevenLastHumidData();
 });
 </script>
 
 <template>
+  <!-- Temperature Chart -->
   <div
     class="max-w-[75rem] w-full bg-white rounded-2xl shadow border-gray-400 border mx-auto"
   >
@@ -292,7 +98,7 @@ onMounted(async () => {
           {{ maxTemp ? maxTemp.temperature_F.toFixed(2) : "Loading..." }}&deg;F
         </h5>
         <p class="text-base font-normal text-gray-500 text-center">
-          Max Temperature
+          Maximum temperature ever recorded
         </p>
       </div>
       <span
@@ -321,12 +127,12 @@ onMounted(async () => {
           {{ minTemp ? minTemp.temperature_F : "Loading..." }}&deg;F
         </h5>
         <p class="text-base font-normal text-gray-500 text-center">
-          Min Temperature
+          Minimum temperature ever recorded
         </p>
       </div>
       <span
         ><i
-          class="fa-solid fa-repeat hidden md:inline-flex text-xl mt-3 mr-11 text-center text-gray-700 hover:text-gray-900"
+          class="fa-solid fa-repeat hidden md:inline-flex text-xl mt-3 mr-[2.55rem] text-center text-gray-700 hover:text-gray-900"
         ></i
       ></span>
       <div
@@ -340,28 +146,123 @@ onMounted(async () => {
     <!-- Show Chart -->
     <div
       id="labels-chart"
-      class="px-2.5"
+      class="px-2.5 my-5"
       v-if="sevenTempDataC.length && sevenTempDataF.length"
     >
       <VueApexCharts
-        :type="chartOptions.chart.type"
-        :options="chartOptions"
-        :series="chartOptions.series"
-        :height="chartOptions.chart.height"
-        :width="chartOptions.chart.width"
+        :type="TempChartOptions.chart.type"
+        :options="TempChartOptions"
+        :series="TempChartOptions.series"
+        :height="TempChartOptions.chart.height"
+        :width="TempChartOptions.chart.width"
       />
     </div>
 
     <div
       class="grid grid-cols-1 items-center border-gray-400 border-t rounded-b-2xl justify-between mt-5 p-4 md:p-6 pt-0 md:pt-0"
     >
-      <div class="flex justify-between items-center pt-5">
+      <div class="flex justify-center items-center pt-5">
         <!-- Button -->
         <span
           class="text-sm font-medium text-gray-500 hover:text-gray-900 text-center inline-flex items-center"
           type="button"
         >
-          Last 7 data
+          Last seven recorded data
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Humidity Chart -->
+  <div
+    class="max-w-[75rem] w-full bg-white rounded-2xl shadow border-gray-400 border mx-auto mb-20 mt-6"
+  >
+    <!-- Show Min/Max Temperature -->
+    <div
+      class="flex justify-between p-4 md:p-6 pb-0 md:pb-0 select-none cursor-pointer"
+      @click="minMax.toggledMinMax"
+      v-if="minMax.isToggled"
+    >
+      <div
+        class="flex items-center px-2.5 py-0.5 text-base font-semibold text-primary-500 text-center"
+      >
+        {{ formattedMaxHumidFullDate || "Loading..." }}
+        <i class="fa-solid fa-arrow-up ms-2"></i>
+      </div>
+
+      <span class="flex items-center justify-center">
+        <i
+          class="fa-solid fa-repeat hidden md:inline-flex text-xl text-gray-700 hover:text-gray-900"
+        ></i>
+      </span>
+
+      <div>
+        <h5
+          class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
+        >
+          {{ maxHumid ? maxHumid.humidity.toFixed(2) : "Loading..." }}&percnt;
+        </h5>
+        <p class="text-base font-normal text-gray-500 text-center">
+          Maximum humidity ever recorded
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="flex justify-between p-4 md:p-6 pb-0 md:pb-0 select-none cursor-pointer"
+      @click="minMax.toggledMinMax"
+      v-else
+    >
+      <div
+        class="flex items-center px-2.5 py-0.5 text-base font-semibold text-[#DFA301] text-center"
+      >
+        {{ formattedMinHumidFullDate || "Loading..." }}
+        <i class="fa-solid fa-arrow-up ms-2"></i>
+      </div>
+
+      <span class="flex items-center justify-center">
+        <i
+          class="fa-solid fa-repeat hidden md:inline-flex text-xl text-gray-700 hover:text-gray-900"
+        ></i>
+      </span>
+
+      <div>
+        <h5
+          class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
+        >
+          {{ minHumid ? minHumid.humidity.toFixed(2) : "Loading..." }}&percnt;
+        </h5>
+        <p class="text-base font-normal text-gray-500 text-center">
+          Minimum humidity ever recorded
+        </p>
+      </div>
+    </div>
+
+    <!-- Show Chart -->
+    <div
+      id="column-chart"
+      class="px-2.5 my-3"
+      v-if="sevenTempDataC.length && sevenTempDataF.length"
+    >
+      <VueApexCharts
+        :type="humidChartOptions.chart.type"
+        :options="humidChartOptions"
+        :series="humidChartOptions.series"
+        :height="humidChartOptions.chart.height"
+        :width="humidChartOptions.chart.width"
+      />
+    </div>
+
+    <div
+      class="grid grid-cols-1 items-center border-gray-400 border-t rounded-b-2xl justify-between mt-5 p-4 md:p-6 pt-0 md:pt-0"
+    >
+      <div class="flex justify-center items-center pt-5">
+        <!-- Button -->
+        <span
+          class="text-sm font-medium text-gray-500 hover:text-gray-900 text-center inline-flex items-center"
+          type="button"
+        >
+          Last seven recorded data
         </span>
 
         <!-- <div data-dial-init class="flex group">

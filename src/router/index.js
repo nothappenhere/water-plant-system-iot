@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
-import TempView from "@/views/TempView.vue";
+import TempHumView from "@/views/TempHumView.vue";
+import SoilMoistView from "@/views/SoilMoistView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 
 const router = createRouter({
@@ -8,13 +9,18 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "home",
+      name: "homepage",
       component: HomeView,
     },
     {
-      path: "/temp",
-      name: "temperature",
-      component: TempView,
+      path: "/tempHum",
+      name: "temperature-humidity",
+      component: TempHumView,
+    },
+    {
+      path: "/soil",
+      name: "soil-moisture",
+      component: SoilMoistView,
     },
     {
       path: "/:catchAll(.*)",

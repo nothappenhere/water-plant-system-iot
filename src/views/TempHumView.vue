@@ -1,9 +1,9 @@
 <script setup>
 import BackButton from "@/components/BackButton.vue";
-import Temperature from "@/components/Temperature.vue";
+import TemperatureHumidity from "@/components/TemperatureHumidity.vue";
 </script>
 
 <template>
   <BackButton />
-  <Temperature />
+  <TemperatureHumidity />
 </template>
