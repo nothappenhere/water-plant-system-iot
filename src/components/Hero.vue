@@ -17,7 +17,7 @@ defineProps({
 </script>
 
 <template>
-  <section class="bg-white">
+  <section class="bg-zinc-100">
     <div
       class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12"
     >
@@ -33,7 +33,7 @@ defineProps({
           {{ subtitle }}
         </p>
         <RouterLink
-          to="/tempHum"
+          to="/tempHumid"
           class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-500"
         >
           Get started

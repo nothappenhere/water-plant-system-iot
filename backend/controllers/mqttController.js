@@ -12,42 +12,69 @@ const options = {
 
 // Koneksi ke broker MQTT
 const client = mqtt.connect(options);
-
-const mqttTopicTemperature = "esp32/dht11";
+const mqttTopic = ["esp32/dht11", "esp32/soil", "esp32/waterContainer"];
 
 client.on("connect", () => {
   console.log("Connected to MQTT broker");
-  client.subscribe(mqttTopicTemperature, (err) => {
-    if (!err) {
-      console.log(`Subscribe to topic ${mqttTopicTemperature}`);
+
+  client.subscribe(mqttTopic, (err, granted) => {
+    if (err) {
+      console.error(`Failed to subscribe: ${err.message}`);
     } else {
-      console.error(`Failure to subscribe, ${err}`);
+      granted.forEach((topic) => {
+        console.log(`Subscribed to topic: ${topic.topic}`);
+      });
     }
   });
 });
 
 client.on("message", (topic, message) => {
-  if (topic === mqttTopicTemperature) {
-    const rawData = message.toString(); // Data mentah dari broker MQTT
+  const rawData = message.toString(); // Data mentah dari broker MQTT
 
-    // Parsing data untuk memisahkan suhu dan kelembapan
-    const suhuCelciusMatch = rawData.match(/Temperature: ([\d.]+)°C/); // Ekstrak angka suhu
-    const suhuFahrenheitMatch = rawData.match(/([\d.]+)°F/); // Ekstrak angka suhu
-    const kelembapanMatch = rawData.match(/Humidity: ([\d.]+)%/); // Ekstrak angka kelembapan
+  if (topic === "esp32/dht11") {
+    // Parsing data untuk topik DHT11
+    const celciusMatch = rawData.match(/Temperature: ([\d.]+)°C/);
+    const fahrenheitMatch = rawData.match(/Fahrenheit: ([\d.]+)°F/);
+    const humidityMatch = rawData.match(/Humidity: ([\d.]+)%/);
 
-    // Simpan data yang diparsing ke dalam variabel global
     sensorData = {
-      suhuCelcius: suhuCelciusMatch ? parseFloat(suhuCelciusMatch[1]) : null, // Nilai suhu
-      suhuFahrenheit: suhuFahrenheitMatch
-        ? parseFloat(suhuFahrenheitMatch[1])
-        : null, // Nilai suhu
-      kelembapan: kelembapanMatch ? parseFloat(kelembapanMatch[1]) : null, // Nilai kelembapan
+      celciusDegree: celciusMatch ? parseFloat(celciusMatch[1]) : null,
+      fahrenheitDegree: fahrenheitMatch ? parseFloat(fahrenheitMatch[1]) : null,
+      humidityPercent: humidityMatch ? parseFloat(humidityMatch[1]) : null,
+      soilMoistPercent: sensorData?.soilMoistPercent || null, // Gunakan nilai sebelumnya jika tidak ada data
+      waterLevel: sensorData?.waterLevel || null,
+    };
+  } else if (topic === "esp32/soil") {
+    // Parsing data untuk topik Soil Moisture
+    const soilMoistMatch = rawData.match(/Soil moisture: ([\d.]+)%/);
+
+    sensorData = {
+      celciusDegree: sensorData?.celciusDegree || null,
+      fahrenheitDegree: sensorData?.fahrenheitDegree || null,
+      humidityPercent: sensorData?.humidityPercent || null,
+      soilMoistPercent: soilMoistMatch ? parseFloat(soilMoistMatch[1]) : null,
+      waterLevel: sensorData?.waterLevel || null,
+    };
+  } else if (topic === "esp32/waterContainer") {
+    // Parsing data untuk topik Water Level
+    const waterLevelMatch = rawData.match(/Water Level: ([A-Za-z\s]+)/);
+
+    sensorData = {
+      celciusDegree: sensorData?.celciusDegree || null,
+      fahrenheitDegree: sensorData?.fahrenheitDegree || null,
+      humidityPercent: sensorData?.humidityPercent || null,
+      soilMoistPercent: sensorData?.soilMoistPercent || null,
+      waterLevel: waterLevelMatch ? waterLevelMatch[1].trim() : null, // Simpan nilai sebagai string
     };
   }
 });
 
-//* @desc   mqtt data sensors
+client.on("error", (err) => {
+  console.error(`MQTT error: ${err.message}`);
+});
+
+//* @desc   mqtt data value sensors
 //* @route  GET /api/mqtt
-export const getMqtt = (req, res) => {
+export const getMqttValue = (req, res) => {
   res.status(200).json(sensorData);
 };

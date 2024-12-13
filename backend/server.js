@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
-import sensors from "./routes/sensors.js";
+
+import sensor from "./routes/sensor.js";
 import dht11 from "./routes/dht11.js";
-import soil from "./routes/soil.js";
+import soilMoisture from "./routes/soilMoisture.js";
 import mqtt from "./routes/mqtt.js";
 const app = express();
 
@@ -12,7 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //* routes
-app.use("/api/sensors", [sensors, dht11, soil, mqtt]);
+app.use("/api", [sensor, dht11, soilMoisture, mqtt]);
 
 const PORT = 8000;
 app.listen(PORT, () => {

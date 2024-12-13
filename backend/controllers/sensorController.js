@@ -2,19 +2,22 @@ import db from "../connection.js";
 import moment from "moment-timezone";
 
 //* @desc   Get all sensors value
-//* @route  GET /api/sensors
+//* @route  GET /api || /api?limit=<?>
 export const getSensors = (req, res) => {
-  db.query("SELECT * FROM sensor_readings", (err, result) => {
-    const limit = parseInt(req.query.limit);
-    if (!isNaN(limit) && limit > 0) {
-      return res.status(200).json(result.slice(0, limit));
-    }
+  const limit = parseInt(req.query.limit);
+  const validLimit = !isNaN(limit) && limit > 0 ? limit : 10;
 
-    if (err) {
-      return res.status(500).json({ error: "Database query failed" });
+  db.query(
+    "SELECT * from sensor_readings ORDER BY timestamp ASC LIMIT ?",
+    [validLimit],
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: "Database query failed" });
+      }
+
+      res.status(200).json(result);
     }
-    res.status(200).json(result);
-  });
+  );
 };
 
 export const postDB = (req, res) => {
@@ -43,10 +46,8 @@ export const postDB = (req, res) => {
   db.query(sql, values, (error, results) => {
     if (error) {
       console.error("Gagal menyimpan data:", error);
-      res.status(500).send("Gagal menyimpan data!");
-    } else {
-      res.status(200).send("Data berhasil disimpan!");
-      res.status(200).json(results);
+      return res.status(500).send("Gagal menyimpan data!");
     }
+    res.status(200).json({ message: "Data berhasil disimpan!", results });
   });
 };

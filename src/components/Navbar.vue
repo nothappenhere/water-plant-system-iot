@@ -92,9 +92,9 @@ const isActiveLink = (routePath) => {
           </li>
           <li>
             <RouterLink
-              to="/tempHum"
+              to="/tempHumid"
               :class="[
-                isActiveLink('/tempHum')
+                isActiveLink('/tempHumid')
                   ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
                   : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
@@ -109,9 +109,9 @@ const isActiveLink = (routePath) => {
           </li>
           <li>
             <RouterLink
-              to="/soil"
+              to="/soilMoist"
               :class="[
-                isActiveLink('/soil')
+                isActiveLink('/soilMoist')
                   ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
                   : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
@@ -126,9 +126,9 @@ const isActiveLink = (routePath) => {
           </li>
           <li>
             <RouterLink
-              to="/w-lvl"
+              to="/waterLvl"
               :class="[
-                isActiveLink('/w-lvl')
+                isActiveLink('/waterLvl')
                   ? 'md:bg-primary-700 md:hover:bg-gray-800 md:text-white bg-blue-700 text-white'
                   : 'md:hover:bg-gray-800 md:hover:text-white md:text-black hover:bg-gray-200',
                 'block',
