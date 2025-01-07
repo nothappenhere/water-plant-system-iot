@@ -15,7 +15,7 @@ const isActiveLink = (routePath) => {
     >
       <!-- Logo Icon -->
       <RouterLink to="/" class="flex items-center space-x-3">
-        <img :src="logo" class="h-10" alt="wps-logo" />
+        <img :src="logo" class="h-11" alt="wps-logo" />
         <span
           class="self-center text-2xl font-semibold whitespace-nowrap select-none hidden sm:inline"
           >Water Plant System</span
@@ -26,7 +26,7 @@ const isActiveLink = (routePath) => {
         >
       </RouterLink>
 
-      <!-- CTA -->
+      <!-- CTA GITHUB -->
       <div class="flex md:order-2 space-x-3 md:space-x-0">
         <a
           href="https://github.com/nothappenhere/water-plant-system-iot"

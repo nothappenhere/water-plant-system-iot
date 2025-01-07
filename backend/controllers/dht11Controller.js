@@ -13,7 +13,9 @@ export const getMaximum = (req, res, type) => {
       : null;
 
   if (!column) {
-    return res.status(400).json({ error: "Invalid type parameter" });
+    return res.status(400).json({
+      error: "Invalid type parameter, type must be 'temperature' or 'humidity'.",
+    });
   }
 
   db.query(
@@ -23,9 +25,24 @@ export const getMaximum = (req, res, type) => {
     (err, result) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ error: "Database query failed" });
+        return res.status(500).json({ error: "Database query failed." });
       }
-      res.status(200).json(result);
+
+      // Loop untuk mengonversi setiap timestamp dalam hasil query
+      const updatedResult = result.map((row) => {
+        // Mengonversi timestamp UTC ke waktu lokal (Asia/Jakarta)
+        const timestampLocal = moment
+          .utc(row.timestamp) // mengonversi dari UTC
+          .tz("Asia/Jakarta") // mengonversi ke zona waktu lokal
+          .format("YYYY-MM-DD HH:mm:ss"); // format yang diinginkan
+
+        // Menambahkan timestamp lokal ke dalam objek hasil
+        return { ...row, timestamp: timestampLocal };
+      });
+
+      res
+        .status(200)
+        .json({ message: `Get maximum ${column}`, data: updatedResult });
     }
   );
 };
@@ -42,7 +59,10 @@ export const getMinimum = (req, res, type) => {
       : null;
 
   if (!column) {
-    return res.status(400).json({ error: "Invalid type parameter" });
+    return res.status(400).json({
+      error:
+        "Invalid type parameter, type must be 'temperature' or 'humidity'.",
+    });
   }
 
   db.query(
@@ -52,25 +72,7 @@ export const getMinimum = (req, res, type) => {
     (err, result) => {
       if (err) {
         console.error(err);
-        return res.status(500).json({ error: "Database query failed" });
-      }
-      res.status(200).json(result);
-    }
-  );
-};
-
-//* @desc   Get seven last temperature & humidity data sensors
-//* @route  GET /api/dht || /api/dht?limit=<?>
-export const getSevenLastData = (req, res) => {
-  const limit = parseInt(req.query.limit);
-  const validLimit = !isNaN(limit) && limit > 0 ? limit : 7;
-
-  db.query(
-    "SELECT * from sensor_readings ORDER BY timestamp DESC LIMIT ?",
-    [validLimit],
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: "Database query failed" });
+        return res.status(500).json({ error: "Database query failed." });
       }
 
       // Loop untuk mengonversi setiap timestamp dalam hasil query
@@ -85,7 +87,9 @@ export const getSevenLastData = (req, res) => {
         return { ...row, timestamp: timestampLocal };
       });
 
-      res.status(200).json(updatedResult);
+      res
+        .status(200)
+        .json({ message: `Get minimum ${column}`, data: updatedResult });
     }
   );
 };

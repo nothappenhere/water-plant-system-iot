@@ -141,7 +141,7 @@ if (
 ) {
   const chart = new ApexCharts(
     document.getElementById("column-chart"),
-    humidChartOptions
+    humidChartOptions.value
   );
   chart.render();
 }

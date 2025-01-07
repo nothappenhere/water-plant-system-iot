@@ -101,9 +101,8 @@ onMounted(async () => {
         <h5
           class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
         >
-          {{ maxTemp ? maxTemp.temperature_C.toFixed(2) : "Loading..." }}&deg;C
-          &#8776;
-          {{ maxTemp ? maxTemp.temperature_F.toFixed(2) : "Loading..." }}&deg;F
+          {{ maxTemp ? maxTemp.temperature_C : "Loading..." }}&deg;C &#8776;
+          {{ maxTemp ? maxTemp.temperature_F : "Loading..." }}&deg;F
         </h5>
         <p class="text-base font-normal text-gray-600 text-center">
           Highest temperature recorded
@@ -133,9 +132,8 @@ onMounted(async () => {
         <h5
           class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
         >
-          {{ minTemp ? minTemp.temperature_C.toFixed(2) : "Loading..." }}&deg;C
-          &#8776;
-          {{ minTemp ? minTemp.temperature_F.toFixed(2) : "Loading..." }}&deg;F
+          {{ minTemp ? minTemp.temperature_C : "Loading..." }}&deg;C &#8776;
+          {{ minTemp ? minTemp.temperature_F : "Loading..." }}&deg;F
         </h5>
         <p class="text-base font-normal text-gray-600 text-center">
           Lowest temperature recorded
@@ -213,7 +211,7 @@ onMounted(async () => {
         <h5
           class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
         >
-          {{ maxHumid ? maxHumid.humidity.toFixed(2) : "Loading..." }}&percnt;
+          {{ maxHumid ? maxHumid.humidity : "Loading..." }}&percnt;
         </h5>
         <p class="text-base font-normal text-gray-600 text-center">
           Highest humidity recorded
@@ -243,7 +241,7 @@ onMounted(async () => {
         <h5
           class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
         >
-          {{ minHumid ? minHumid.humidity.toFixed(2) : "Loading..." }}&percnt;
+          {{ minHumid ? minHumid.humidity : "Loading..." }}&percnt;
         </h5>
         <p class="text-base font-normal text-gray-600 text-center">
           Lowest humidity recorded

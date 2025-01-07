@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import flowbitePlugin from "flowbite/plugin";
+
 export default {
   content: [
     "./index.html",
@@ -23,10 +25,10 @@ export default {
         },
       },
       fontFamily: {
-        poppins: ["Poppins", "sans-serif"],
-        montserrat: ["Montserrat", "sans-serif"],
+        poppins: ["Poppins"],
+        montserrat: ["Montserrat"],
       },
     },
   },
-  plugins: [require("flowbite/plugin")],
+  plugins: [flowbitePlugin],
 };

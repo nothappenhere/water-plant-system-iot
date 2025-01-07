@@ -5,7 +5,7 @@ import { currentSensorValue } from "@/utility/currentSensorValue";
 <template>
   <!-- Verry Low -->
   <div
-    class="max-w-[75rem] w-full h-72 bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
+    class="max-w-[75rem] w-full h-[19rem] bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
     v-if="currentSensorValue.waterLevel === 'Verry Low'"
   >
     <div
@@ -15,9 +15,10 @@ import { currentSensorValue } from "@/utility/currentSensorValue";
       10%
     </div>
   </div>
+
   <!-- Low -->
   <div
-    class="max-w-[75rem] w-full h-72 bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
+    class="max-w-[75rem] w-full h-[19rem] bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
     v-else-if="currentSensorValue.waterLevel === 'Low'"
   >
     <div
@@ -27,9 +28,10 @@ import { currentSensorValue } from "@/utility/currentSensorValue";
       35%
     </div>
   </div>
+
   <!-- Medium -->
   <div
-    class="max-w-[75rem] w-full h-72 bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
+    class="max-w-[75rem] w-full h-[19rem] bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
     v-else-if="currentSensorValue.waterLevel === 'Medium'"
   >
     <div
@@ -39,9 +41,10 @@ import { currentSensorValue } from "@/utility/currentSensorValue";
       55%
     </div>
   </div>
+
   <!-- Full -->
   <div
-    class="max-w-[75rem] w-full h-72 bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
+    class="max-w-[75rem] w-full h-[19rem] bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
     v-else-if="currentSensorValue.waterLevel === 'Full'"
   >
     <div
@@ -49,6 +52,19 @@ import { currentSensorValue } from "@/utility/currentSensorValue";
       style="width: 100%"
     >
       90%
+    </div>
+  </div>
+
+  <!-- Default -->
+  <div
+    class="max-w-[75rem] w-full h-[19rem] bg-gray-200 rounded-lg mx-auto flex justify-center items-end"
+    v-else
+  >
+    <div
+      class="h-8 bg-red-600 text-lg font-bold text-blue-100 text-center p-0.5 leading-none rounded-b-lg flex items-center justify-center"
+      style="width: 100%"
+    >
+      Not detected!
     </div>
   </div>
 </template>

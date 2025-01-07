@@ -11,5 +11,5 @@ const app = createApp(App);
 
 app.use(router);
 app.use(VueApexCharts);
-// app.use(initFlowbite);
 app.mount("#app");
+// app.use(initFlowbite);

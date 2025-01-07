@@ -8,7 +8,7 @@ const currentSensorValue = ref([]);
 async function getCurrentSensorValue() {
   try {
     const response = await axios.get("http://localhost:8000/api/mqtt");
-    currentSensorValue.value = response.data; // Update nilai yang direferensikan
+    currentSensorValue.value = response.data.data;
   } catch (error) {
     console.error("Error fetching API: ", error);
   }

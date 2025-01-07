@@ -69,9 +69,7 @@ onMounted(async () => {
           <h5
             class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
           >
-            {{
-              maxSoil ? maxSoil.soil_moisture.toFixed(2) : "Loading..."
-            }}&percnt;
+            {{ maxSoil ? maxSoil.soil_moisture : "Loading..." }}&percnt;
           </h5>
           <p class="text-base font-normal text-gray-600 text-center">
             Highest soil moisture recorded
@@ -101,9 +99,7 @@ onMounted(async () => {
           <h5
             class="leading-none text-lg md:text-3xl font-bold text-gray-900 text-center"
           >
-            {{
-              minSoil ? minSoil.soil_moisture.toFixed(2) : "Loading..."
-            }}&percnt;
+            {{ minSoil ? minSoil.soil_moisture : "Loading..." }}&percnt;
           </h5>
           <p class="text-base font-normal text-gray-600 text-center">
             Lowest soil moisture recorded

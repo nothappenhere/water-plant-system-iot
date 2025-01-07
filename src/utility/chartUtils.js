@@ -23,8 +23,8 @@ export function useChartData(type, property = null) {
         response = await axios.get(`http://localhost:8000/api/${type}/max`);
       }
 
-      if (response.data.length > 0) {
-        maxData.value = response.data[0];
+      if (response.status === 200) {
+        maxData.value = response.data.data[0];
         formatTimestamp(maxData.value.timestamp, "max");
       } else {
         maxData.value = null;
@@ -45,8 +45,8 @@ export function useChartData(type, property = null) {
         response = await axios.get(`http://localhost:8000/api/${type}/min`);
       }
 
-      if (response.data.length > 0) {
-        minData.value = response.data[0];
+      if (response.status === 200) {
+        minData.value = response.data.data[0];
         formatTimestamp(minData.value.timestamp, "min");
       } else {
         minData.value = null;
@@ -61,14 +61,10 @@ export function useChartData(type, property = null) {
     try {
       let response = "";
 
-      if (type === "temperature" || type === "humidity") {
-        response = await axios.get(`http://localhost:8000/api/dht`);
-      } else if (type === "soil") {
-        response = await axios.get(`http://localhost:8000/api/soil`);
-      }
+      response = await axios.get(`http://localhost:8000/api`);
 
-      if (response.data.length) {
-        sevenLastData.value = response.data;
+      if (response.status === 200) {
+        sevenLastData.value = response.data.data;
 
         if (type === "temperature") {
           sevenDataCelciusDegree.value = [];
